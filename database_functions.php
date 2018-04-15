@@ -11,62 +11,42 @@
         $dbPassword = '2590993_TestDb';
         $dbDatabase = '2590993_testdb';
         //
-        // string which will hold the contents as an array decleration
-        $database_contents_as_array_decleration = "";
+        // array to hold the database contents 
+        $database_contents_array = array();
         //
         // get database connection
         $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
         //
-        if(mysqli_connect_errno($mysqlidb))
-        {
-            // error getting connection so set output string as empty array
-            $database_contents_as_array_decleration = "items = []";
-        }
-        else
+        // continue if there was no error connecting to the database
+        if(!mysqli_connect_errno($mysqlidb))
         {
             // get all items in the shopping list
             $result = mysqli_query($mysqlidb, "SELECT * FROM shopping_list");
             //
             if($result)
             {
-                // there are results so start the string
-                $database_contents_as_array_decleration = "items = [";
-                //
                 // for all rows populate the string with the row data
                 while($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
                 {
                     // calculate the line total to be used as part of the output string
                     $line_total = $row['quantity'] * $row['last_price'];
                     //
-                    // add info from this row to the output string
-                    $database_contents_as_array_decleration = $database_contents_as_array_decleration . 
-                                            "{ " .
-                                            "checked:" . (boolval($row['checked']) ? 'true' : 'false') . ", " . 
-                                            "description:'" . $row['description'] . "', " .
-                                            "quantity:" . strval($row['quantity']) . ", " .
-                                            "price:" . strval($row['last_price']) . ", " .
-                                            "total:" . strval($line_total) .
-                                            " },";
+                    // add info from this row to the database contents array
+                    $database_contents_array[] = array("checked" => (boolval($row['checked']) ? 'true' : 'false'),
+                                                        "description" => $row['description'],
+                                                        "quantity" => $row['quantity'],
+                                                        "price" => $row['last_price'],
+                                                        "total" => $line_total);
                 }
-                //
-                // remove the last comma from the output string 
-                $database_contents_as_array_decleration = rtrim($database_contents_as_array_decleration, ",");
-                //
-                // add the closing square bracket to the output string
-                $database_contents_as_array_decleration = $database_contents_as_array_decleration . "]";   
-            }
-            else
-            {
-                // no results so set output string as an empty array
-                $database_contents_as_array_decleration = "items = []";
+                // 
             }
         }
         //
         // close the database 
         mysqli_close($mysqlidb);
         //
-        // echo the output string 
-        echo json_encode($database_contents_as_array_decleration);
+        // echo the database contents array 
+        echo json_encode($database_contents_array);
     }
 
     // name: add_item_to_database
