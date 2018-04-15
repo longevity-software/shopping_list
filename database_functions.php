@@ -32,7 +32,7 @@
                     $line_total = $row['quantity'] * $row['last_price'];
                     //
                     // add info from this row to the database contents array
-                    $database_contents_array[] = array("checked" => (boolval($row['checked']) ? 'true' : 'false'),
+                    $database_contents_array[] = array("checked" => boolval($row['checked']),
                                                         "description" => $row['description'],
                                                         "quantity" => $row['quantity'],
                                                         "price" => $row['last_price'],
