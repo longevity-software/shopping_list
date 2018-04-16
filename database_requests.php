@@ -20,6 +20,10 @@ if(isset($_POST['action']))
             http_response_code(202);
             delete_item_from_database_using_description($_POST['description']);
             break;
+        case 'get':
+            // return an accepted response code
+            http_response_code(202);
+            get_shopping_list_items();
         default:
             // action not recognised so return a bad request response code
             http_response_code(400);

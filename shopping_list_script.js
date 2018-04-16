@@ -162,5 +162,28 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                 });
             }
         });
+        //
+        // send one last post request to update the items array 
+        post_data = "action=get";
+        //
+        post_request = 
+        {
+            method: "POST",
+            url: "database_requests.php",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: post_data
+        };
+        //
+        $http(post_request).then(function(response){
+            console.log(response);
+            // update the items array with the returned data
+            $scope.items = response.data;
+        }, function(response){
+            console.log(response);
+            // update the status bar
+            status_bar.innerText = "Failed to refresh list";
+        });
     };
 });
