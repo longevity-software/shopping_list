@@ -121,11 +121,12 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
             // if this item is checked
             if(value.checked)
             {
-                // item is checked for deletion so increment items to delete
+                // item is checked for deletion so add to the items to delete
                 items_to_delete.push(value);
             }
             else
             {
+                // item is not checked so add to the items to keep 
                 items_to_keep.push(value);
             }
         });
@@ -160,6 +161,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                 // success so increment the items deleted
                 items_deleted++;
                 //
+                // if all items to delete have been accounted for
                 if((items_deleted + items_failed) == number_of_items_to_delete)
                 {
                     // set the items array to the items to keep
@@ -179,6 +181,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                     // add this item back to the items list
                     items_to_keep.push(value);
                     //        
+                    // if all items to delete have been accounted for
                     if((items_deleted + items_failed) == number_of_items_to_delete)
                     {
                         // set the items array to the items to keep
