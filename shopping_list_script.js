@@ -104,8 +104,10 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
         // get a link to the status bar element 
         var status_bar = document.getElementById("status_bar");
         //
-        // variables to inform the user of progress
-        var items_to_delete = 0;
+        // variables to split the checked and unchecked data
+        var items_to_delete = [];
+        var items_to_keep = [];
+        var number_of_items_to_delete = 0;
         var items_deleted = 0;
         var items_failed = 0;
         //
@@ -120,70 +122,71 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
             if(value.checked)
             {
                 // item is checked for deletion so increment items to delete
-                items_to_delete++;
-                //
-                // update the status bar
-                status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + items_to_delete + " items"; 
-                //
-                // generate post data to delete this item
-                post_data = "action=delete"+
-                            "&description="+value.description;
-                //
-                // generate post request info 
-                post_request = 
-                {
-                    method: "POST",
-                    url: "database_requests.php",
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    data: post_data
-                };
-                //
-                // send the post request 
-                $http(post_request).then(function (response){
-                    //
-                    // success so increment the items deleted
-                    items_deleted++;
-                    //
-                    // update the status bar
-                    status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + items_to_delete + " items";
-                    //
-                    }, function(response){
-                        //
-                        // log to the console for debug purposes
-                        console.log(response);
-                        //
-                        // increment the items failed
-                        items_failed++;
-                        //
-                        // update the status bar
-                        status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + items_to_delete + " items";
-                });
+                items_to_delete.push(value);
+            }
+            else
+            {
+                items_to_keep.push(value);
             }
         });
         //
-        // send one last post request to update the items array 
-        post_data = "action=get";
+        // number of items to delete is the size of the items_to_delete array
+        number_of_items_to_delete = items_to_delete.length;
         //
-        post_request = 
-        {
-            method: "POST",
-            url: "database_requests.php",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: post_data
-        };
-        //
-        $http(post_request).then(function(response){
-            console.log(response);
-            // update the items array with the returned data
-            $scope.items = response.data;
-        }, function(response){
-            console.log(response);
+        // loop to remove the items to delete
+        angular.forEach(items_to_delete, function(value, key){
+            //
             // update the status bar
-            status_bar.innerText = "Failed to refresh list";
+            status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + number_of_items_to_delete + " items"; 
+            //
+            // generate post data to delete this item
+            post_data = "action=delete"+
+                        "&description="+value.description;
+            //
+            // generate post request info 
+            post_request = 
+            {
+                method: "POST",
+                url: "database_requests.php",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: post_data
+            };
+            //
+            // send the post request 
+            $http(post_request).then(function (response){
+                //
+                // success so increment the items deleted
+                items_deleted++;
+                //
+                if((items_deleted + items_failed) == number_of_items_to_delete)
+                {
+                    // set the items array to the items to keep
+                    $scope.items = items_to_keep;
+                }
+                // update the status bar
+                status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + number_of_items_to_delete + " items";
+                //
+                }, function(response){
+                    //
+                    // log to the console for debug purposes
+                    console.log(response);
+                    //
+                    // increment the items failed
+                    items_failed++;
+                    //
+                    // add this item back to the items list
+                    items_to_keep.push(value);
+                    //        
+                    if((items_deleted + items_failed) == number_of_items_to_delete)
+                    {
+                        // set the items array to the items to keep
+                        $scope.items = items_to_keep;
+                    }
+                    // update the status bar
+                    status_bar.innerText = items_deleted + " successful " + items_failed + " failed out of " + number_of_items_to_delete + " items";
+                });
         });
     };
 });
