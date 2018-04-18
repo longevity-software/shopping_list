@@ -20,7 +20,7 @@
         <?php require_once("database_functions.php") ?>
 
         <!-- main div -->
-        <div ng-controller="shopping_list_controller" id="shopping_list_main_div" ng-init=<?php get_shopping_list_items()?> >
+        <div ng-controller="shopping_list_controller" id="shopping_list_main_div" ng-init='items=<?php get_shopping_list_items()?>' >
         
             <!-- Add new items to the list div -->
             <div>
@@ -37,7 +37,11 @@
                     </p>
                     <p align="center">
                         <!-- description text input -->
-                        <input type="text" name="description_input" ng-model="add_description" ng-model-instant></input>
+                        <input type="text" list="auto_complete_list_id" name="description_input" ng-model="add_description" ng-model-instant></input>
+                        
+                        <datalist id="auto_complete_list_id">
+                            <option ng-repeat="item in items" value="{{item.description}}">
+                        </datalist>
                     </p>
                     <p align="center">
                         <!-- quantity label -->
