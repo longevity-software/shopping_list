@@ -37,7 +37,7 @@
                     </p>
                     <p align="center">
                         <!-- description text input -->
-                        <input type="text" list="auto_complete_list_id" name="description_input" ng-model="add_description" ng-model-instant></input>
+                        <input type="text" id="description_input_id" list="auto_complete_list_id" name="description_input" ng-change="check_for_duplicates()" ng-model="add_description" ng-model-instant></input>
                         
                         <datalist id="auto_complete_list_id">
                             <option ng-repeat="item in items" value="{{item.description}}">

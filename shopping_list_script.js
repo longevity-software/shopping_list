@@ -206,4 +206,25 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                 });
         });
     };
+
+    // name: check_for_duplicates
+    // desc: compares the entered description with all the current 
+    //        item descriptions, and updates the quantity and price
+    //        if a match is found
+    $scope.check_for_duplicates = function()
+    {
+        var entered_description = document.getElementById("description_input_id").value;
+        //
+        // loop through the items array and check if one matches the entered description
+        angular.forEach($scope.items, function(value, key){
+            //
+            // if this item is checked
+            if(value.description == entered_description)
+            {
+                // item description matches so update the fields
+                $scope.add_quantity = value.quantity;
+                $scope.add_price = value.price;
+            }
+        });
+    };
 });
