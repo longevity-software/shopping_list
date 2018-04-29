@@ -3,10 +3,13 @@ shopping_list_app = angular.module("shopping_list_application", []);
 // shopping list controller containing all shopping list variables and functoions
 shopping_list_app.controller("shopping_list_controller", function($scope, $http){
 
+    var add_item_string = "Add Item";
+    var update_item_string = "Update Item";
     // contoller level variables which are bound to html elements
     $scope.items = [];
     $scope.add_quantity = 1;
     $scope.add_description = "";
+    $scope.add_or_update_string = add_item_string;
 
     // name: get_total
     // desc: loops through all items to calculate and return the sum total 
@@ -64,11 +67,25 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                             total:($scope.add_quantity * $scope.add_price)};
         //
         // generate http post data string
-        var post_data = "action=add"+
-                            "&checked="+new_item.checked+
-                            "&description="+new_item.description+
-                            "&quantity="+new_item.quantity+
-                            "&price="+new_item.price;
+        var post_data = "";
+        //
+        // set post data based on wether item is to be added or updated
+        if($scope.add_or_update_string == add_item_string)
+        {
+            post_data = "action=add"+
+                        "&checked="+new_item.checked+
+                        "&description="+new_item.description+
+                        "&quantity="+new_item.quantity+
+                        "&price="+new_item.price;
+        }
+        else if($scope.add_or_update_string == update_item_string)
+        {
+            post_data = "action=update"+
+                        "&checked="+new_item.checked+
+                        "&description="+new_item.description+
+                        "&quantity="+new_item.quantity+
+                        "&price="+new_item.price;            
+        }
         //
         // generate post request info
         var post_request = {
@@ -214,6 +231,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
     $scope.check_for_duplicates = function()
     {
         var entered_description = document.getElementById("description_input_id").value;
+        var match_found = false;
         //
         // loop through the items array and check if one matches the entered description
         angular.forEach($scope.items, function(value, key){
@@ -224,7 +242,18 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                 // item description matches so update the fields
                 $scope.add_quantity = value.quantity;
                 $scope.add_price = value.price;
+                match_found = true;
             }
         });
+        //
+        // change the add button to an update button if a match is found
+        if(match_found)
+        {
+            $scope.add_or_update_string = update_item_string;
+        }
+        else
+        {
+            $scope.add_or_update_string = add_item_string;
+        }
     };
 });

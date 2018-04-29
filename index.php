@@ -63,7 +63,7 @@
                     </p>
                     <p align="center">
                         <!-- add item button -->
-                        <button type="button" ng-click="add_item()">Add Item</button>
+                        <button type="button" ng-click="add_item()">{{add_or_update_string}}</button>
                     </p>
                     
                 </fieldset>
