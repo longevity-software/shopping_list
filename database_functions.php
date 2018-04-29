@@ -58,7 +58,10 @@
         $dbPassword = '2590993_TestDb';
         $dbDatabase = '2590993_testdb';
         //
-        $output_string = "";
+        $output_string = "failure";
+        //
+        // check that checked is a boolean
+        $checked_bool = filter_var($checked, FILTER_VALIDATE_BOOLEAN);
         //
         // get connetcion to the database            
         $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
@@ -70,19 +73,28 @@
         }
         else
         {
-            // insert the item into the database
-            $result = mysqli_query($mysqlidb,"INSERT INTO shopping_list (checked, description, quantity, last_price) VALUES ('$checked', '$description', '$quantity', '$price')");
-            //
-            // set the output string as the result of the query
-            if($result)
+            // check type of parameters
+            if(is_bool($checked_bool) && is_string($description) && is_numeric($quantity) && is_numeric($price))
             {
-                $output_string = "success";
+                // escape special characters from the description string
+                mysqli_real_escape_string($mysqlidb, $description);
+                //
+                // create a prepared statement 
+                if($prep_statement = $mysqlidb->prepare("INSERT INTO shopping_list (checked, description, quantity, last_price) VALUES(?,?,?,?)"))
+                {
+                    // convert checked bool to an integer value to store it in the database                
+                    $checked_bool_int_val = intval($checked_bool);
+                    //
+                    // bind the parameters to the prepared statement
+                    $prep_statement->bind_param('isii', $checked_bool_int_val, $description, $quantity, $price);
+                    //
+                    // execute the query
+                    if($prep_statement->execute())
+                    {
+                        $output_string = "success";
+                    }
+                }
             }
-            else
-            {
-                $output_string = "failure";
-            }
-            //
         }
         //
         // close the database 

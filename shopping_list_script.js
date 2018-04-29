@@ -50,6 +50,12 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
         // get link to status bar element
         var status_bar = document.getElementById("status_bar");
         //
+        // if price is not a number then set price to 0
+        if(isNaN($scope.add_price)||($scope.add_price == ""))
+        {
+            $scope.add_price = 0;
+        }
+        //
         // generate new item from bound variables
         var new_item = {checked:false, 
                             description:$scope.add_description, 
@@ -82,10 +88,17 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
             // log to console for debug purposes 
             console.log(response);
             //
-            // post was successful so add new_item to the array of items
-            $scope.items.push(new_item);
-            // update the status bar
-            status_bar.innerText = "Added " + new_item.description + " to the list";
+            if(response.data == "success")
+            {
+                // post was successful so add new_item to the array of items
+                $scope.items.push(new_item);
+                // update the status bar
+                status_bar.innerText = "Added " + new_item.description + " to the list";
+            }
+            else
+            {
+                status_bar.innerText = "Failed to Add " + new_item.description + " to the list";
+            }
             //
         }, function(response){
             // log to console for debug purposes 
