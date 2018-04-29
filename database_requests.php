@@ -18,7 +18,8 @@ if(isset($_POST['action']))
         case 'delete':
             // return an accepted response code
             http_response_code(202);
-            delete_item_from_database_using_description($_POST['description']);
+            //delete_item_from_database_using_description($_POST['description']);
+            delete_item_from_database_using_id($_POST['database_id']);
             break;
         case 'get':
             // return an accepted response code

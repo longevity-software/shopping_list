@@ -32,7 +32,8 @@
                     $line_total = $row['quantity'] * $row['last_price'];
                     //
                     // add info from this row to the database contents array
-                    $database_contents_array[] = array("checked" => boolval($row['checked']),
+                    $database_contents_array[] = array("database_id" => $row['id'],
+                                                        "checked" => boolval($row['checked']),
                                                         "description" => $row['description'],
                                                         "quantity" => $row['quantity'],
                                                         "price" => $row['last_price'],
@@ -126,6 +127,48 @@
             //
             // delete the items from the database
             $result = mysqli_query($mysqlidb,"DELETE FROM shopping_list WHERE description = '$description'");
+            //
+            // set the output string as the result of the query 
+            if($result)
+            {
+                $output_string = "success";
+            }
+            else
+            {
+                $output_string = "failure";
+            }
+            //
+        }
+        //
+        // close the database
+        mysqli_close($mysqlidb);
+        //
+        // echo back the ouput string 
+        echo $output_string;
+    }
+    
+    // name: delete_item_from_database_using_id
+    // desc: deletes an item to the database using the id. 
+    function delete_item_from_database_using_id($database_id)
+    {
+        $dbHost = 'fdb19.atspace.me';
+        $dbUsername = '2590993_testdb';
+        $dbPassword = '2590993_TestDb';
+        $dbDatabase = '2590993_testdb';
+        //
+        $output_string = "";
+        //
+        // get a connection to the database 
+        $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
+            
+        if(mysqli_connect_errno($mysqlidb))
+        {
+            $output_string = "Failed to connect to db: " .mysqli_connect_error();
+        }
+        else{
+            //
+            // delete the items from the database
+            $result = mysqli_query($mysqlidb,"DELETE FROM shopping_list WHERE id = '$database_id'");
             //
             // set the output string as the result of the query 
             if($result)

@@ -155,7 +155,8 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
             //
             // generate post data to delete this item
             post_data = "action=delete"+
-                        "&description="+value.description;
+                        "&description="+value.description+
+                        "&database_id="+value.database_id;
             //
             // generate post request info 
             post_request = 
