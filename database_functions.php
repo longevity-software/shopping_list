@@ -114,7 +114,7 @@
         $dbPassword = '2590993_TestDb';
         $dbDatabase = '2590993_testdb';
         //
-        $output_string = "";
+        $output_string = "failure";
         //
         // get a connection to the database 
         $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
@@ -124,20 +124,26 @@
             $output_string = "Failed to connect to db: " .mysqli_connect_error();
         }
         else{
-            //
-            // delete the items from the database
-            $result = mysqli_query($mysqlidb,"DELETE FROM shopping_list WHERE description = '$description'");
-            //
-            // set the output string as the result of the query 
-            if($result)
+            // check description is a string
+            if(is_string($description))
             {
-                $output_string = "success";
+                // escape special characters
+                mysqli_real_escape_string($mysqlidb, $description);
+                //
+                // create prepared statement 
+                if($prep_statement = $mysqlidb->prepare("DELETE FROM shopping_list WHERE description = ?"))
+                {
+                    // bind the description parameter 
+                    $prep_statement->bind_param('s', $description);
+                    //
+                    if($prep_statement->execute())
+                    {
+                        // set output string to success if query executes
+                        $output_string = "success";
+                    }
+
+                }
             }
-            else
-            {
-                $output_string = "failure";
-            }
-            //
         }
         //
         // close the database
@@ -156,7 +162,7 @@
         $dbPassword = '2590993_TestDb';
         $dbDatabase = '2590993_testdb';
         //
-        $output_string = "";
+        $output_string = "failure";
         //
         // get a connection to the database 
         $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
@@ -166,20 +172,23 @@
             $output_string = "Failed to connect to db: " .mysqli_connect_error();
         }
         else{
-            //
-            // delete the items from the database
-            $result = mysqli_query($mysqlidb,"DELETE FROM shopping_list WHERE id = '$database_id'");
-            //
-            // set the output string as the result of the query 
-            if($result)
+            // confirm that id is a number
+            if(is_numeric($database_id))
             {
-                $output_string = "success";
+                // create prepared statement 
+                if($prep_statement = $mysqlidb->prepare("DELETE FROM shopping_list WHERE id = ?"))
+                {
+                    // bind parameter to prep statement
+                    $prep_statement->bind_param('i', $database_id);
+                    //
+                    // execute the query 
+                    if($prep_statement->execute())
+                    {
+                        // if query executed successfully then set output string to success
+                        $output_string = "success";
+                    }
+                }
             }
-            else
-            {
-                $output_string = "failure";
-            }
-            //
         }
         //
         // close the database
