@@ -46,8 +46,8 @@
         // close the database 
         mysqli_close($mysqlidb);
         //
-        // echo the database contents array 
-        echo json_encode($database_contents_array);
+        // echo the database contents array and escape all the things
+        echo json_encode($database_contents_array, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
     }
 
     // name: add_item_to_database
