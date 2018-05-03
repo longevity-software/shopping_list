@@ -15,6 +15,10 @@ if(isset($_POST['action']))
             http_response_code(202);
             add_item_to_database($_POST['checked'],$_POST['description'],$_POST['quantity'],$_POST['price']);
             break;
+        case 'update':
+            http_response_code(202);
+            update_item_in_database($_POST['database_id'], $_POST['checked'],$_POST['description'],$_POST['quantity'],$_POST['price']);
+            break;
         case 'delete':
             // return an accepted response code
             http_response_code(202);

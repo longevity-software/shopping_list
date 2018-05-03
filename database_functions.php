@@ -105,6 +105,61 @@
         echo $output_string;
     }
     
+    // name: update_item_in_database
+    // desc: updates an item in the database. 
+    function update_item_in_database($database_id, $checked, $description, $quantity, $price)
+    {
+        $dbHost = 'fdb19.atspace.me';
+        $dbUsername = '2590993_testdb';
+        $dbPassword = '2590993_TestDb';
+        $dbDatabase = '2590993_testdb';
+        //
+        $output_string = "failure";
+        //
+        // check that checked is a boolean
+        $checked_bool = filter_var($checked, FILTER_VALIDATE_BOOLEAN);
+        //
+        // get connetcion to the database            
+        $mysqlidb = mysqli_connect($dbHost,$dbUsername,$dbPassword,$dbDatabase);
+        //
+        if(mysqli_connect_errno($mysqlidb))
+        {
+            // failed to connect
+            $output_string = "Failed to connect to db: " .mysqli_connect_error();
+        }
+        else
+        {
+            // check type of parameters
+            if(is_bool($checked_bool) && is_string($description) && is_numeric($quantity) && is_numeric($price))
+            {
+                // escape special characters from the description string
+                mysqli_real_escape_string($mysqlidb, $description);
+                //
+                // create a prepared statement 
+                if($prep_statement = $mysqlidb->prepare("UPDATE shopping_list SET checked = ?, description = ?, quantity = ?, last_price = ? WHERE id = ?"))
+                {
+                    // convert checked bool to an integer value to store it in the database                
+                    $checked_bool_int_val = intval($checked_bool);
+                    //
+                    // bind the parameters to the prepared statement
+                    $prep_statement->bind_param('isiii', $checked_bool_int_val, $description, $quantity, $price, $database_id);
+                    //
+                    // execute the query
+                    if($prep_statement->execute())
+                    {
+                        $output_string = "success";
+                    }
+                }
+            }
+        }
+        //
+        // close the database 
+        mysqli_close($mysqlidb);
+        //
+        // echo the output string
+        echo $output_string;
+    }
+    
     // name: delete_item_from_database_using_description
     // desc: deletes an item to the database using the description. 
     function delete_item_from_database_using_description($description)

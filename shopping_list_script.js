@@ -10,6 +10,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
     $scope.add_quantity = 1;
     $scope.add_description = "";
     $scope.add_or_update_string = add_item_string;
+    $scope.index_of_item_to_update;
 
     // name: get_total
     // desc: loops through all items to calculate and return the sum total 
@@ -81,6 +82,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
         else if($scope.add_or_update_string == update_item_string)
         {
             post_data = "action=update"+
+                        "&database_id="+$scope.items[$scope.index_of_item_to_update].database_id+
                         "&checked="+new_item.checked+
                         "&description="+new_item.description+
                         "&quantity="+new_item.quantity+
@@ -107,10 +109,21 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
             //
             if(response.data == "success")
             {
-                // post was successful so add new_item to the array of items
-                $scope.items.push(new_item);
-                // update the status bar
-                status_bar.innerText = "Added " + new_item.description + " to the list";
+                if($scope.add_or_update_string == add_item_string)
+                {
+                    // post was successful so add new_item to the array of items
+                    $scope.items.push(new_item);
+                    // update the status bar
+                    status_bar.innerText = "Added " + new_item.description + " to the list";
+                }
+                else if($scope.add_or_update_string == update_item_string)
+                {
+                    // update item in the array of items 
+                    $scope.items[$scope.index_of_item_to_update].quantity = $scope.add_quantity;
+                    $scope.items[$scope.index_of_item_to_update].price = $scope.add_price;
+                    // update the status bar
+                    status_bar.innerText = "Updated " + new_item.description + " in the list";
+                }
             }
             else
             {
@@ -242,6 +255,7 @@ shopping_list_app.controller("shopping_list_controller", function($scope, $http)
                 // item description matches so update the fields
                 $scope.add_quantity = value.quantity;
                 $scope.add_price = value.price;
+                $scope.index_of_item_to_update = key;
                 match_found = true;
             }
         });
